@@ -120,7 +120,7 @@ window.addEventListener('load', function() {
     '});' +
     'if(!items.length){alert("\uCCB4\uD06C\uB41C \uC0C1\uD488\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.\\n\uC0C1\uD488\uC744 \uCCB4\uD06C\uD588\uB294\uC9C0 \uD655\uC778\uD574\uC8FC\uC138\uC694.");return;}' +
     'var enc=encodeURIComponent(JSON.stringify(items));' +
-    'location.href="https://kirakein-gif.github.io/cart.html#"+enc;' +
+    'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
   '})();';
 
   document.getElementById('bmBtn').href = bmCode;
