@@ -101,22 +101,23 @@ window.addEventListener('load', function() {
   // 북마클릿 코드: 쿠팡에서 실행, sessionStorage에 저장 후 이 페이지로 이동
   var bmCode = 'javascript:(function(){' +
     'var items=[];' +
+    'var seen={};' +
     'document.querySelectorAll("input[type=checkbox]:checked").forEach(function(cb){' +
       'var c=cb.parentElement.parentElement.parentElement;' +
       'var t=c.innerText;' +
-      'var nm=t.match(/^([\\s\\S]+?)\uC635\uC158:/);' +
-      'if(!nm)return;' +
-      'var name=nm[1].trim();' +
-      'var sm=t.match(/\uC635\uC158:\\s*([^\\n]+)/);' +
+      'var allP=t.match(/([\\d,]+)\\s*원/g);' +
+      'if(!allP)return;' +
+      'var nm=t.match(/^([\\s\\S]+?)옵션:/);' +
+      'var name=nm?nm[1].trim():(t.match(/^([\\s\\S]+?)삭제/)?t.match(/^([\\s\\S]+?)삭제/)[1].trim():"");' +
+      'if(!name)return;' +
+      'if(seen[name])return;seen[name]=true;' +
+      'var sm=t.match(/옵션:\\s*([^\\n]+)/);' +
       'var sr=sm?sm[1].trim():"";' +
-      'var pm=t.match(/([\\d,]+)\\s*\uC6D0/);' +
-      'var price=pm?parseInt(pm[1].replace(/,/g,"")):"0";' +
-      'price=parseInt(price)||0;' +
+      'var discM=t.match(/\\d+%\\s*([\\d,]+)\\s*원/);' +
+      'var price=discM?parseInt(discM[1].replace(/,/g,"")):parseInt(allP[0].replace(/[^\\d]/g,""));' +
       'if(!price)return;' +
-      'var qm=sr.match(/,\\s*(\\d+)\uAC1C$/)||sr.match(/^(\\d+)\uAC1C$/);' +
-      'var qty=qm?parseInt(qm[1]):1;' +
-      'var spec=sr.replace(/,?\\s*\\d+\uAC1C$/,"").trim();' +
-      'items.push({name:name,spec:spec,unit:"\uAC1C",qty:qty,price:Math.floor(price/qty),selected:true,site:"\uCFE0\uD321"});' +
+      'var spec=sr.replace(/,?\\s*\\d+개$/,"").trim();' +
+      'items.push({name:name,spec:spec,unit:"개",qty:1,price:price,selected:true,site:"쿠팡"});' +
     '});' +
     'if(!items.length){alert("\uCCB4\uD06C\uB41C \uC0C1\uD488\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.\\n\uC0C1\uD488\uC744 \uCCB4\uD06C\uD588\uB294\uC9C0 \uD655\uC778\uD574\uC8FC\uC138\uC694.");return;}' +
     'var enc=encodeURIComponent(JSON.stringify(items));' +
