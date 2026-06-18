@@ -119,18 +119,18 @@ window.addEventListener('load', function() {
       'items.push({name:name,spec:spec,unit:"\uAC1C",qty:qty,price:Math.floor(price/qty),selected:true,site:"\uCFE0\uD321"});' +
     '});' +
     'if(!items.length){alert("\uCCB4\uD06C\uB41C \uC0C1\uD488\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.\\n\uC0C1\uD488\uC744 \uCCB4\uD06C\uD588\uB294\uC9C0 \uD655\uC778\uD574\uC8FC\uC138\uC694.");return;}' +
-    'sessionStorage.setItem("cartItems",JSON.stringify(items));' +
-    'location.href="' + thisURL + '";' +
+    'var enc=encodeURIComponent(JSON.stringify(items));' +
+    'location.href="https://kirakein-gif.github.io/cart.html#"+enc;' +
   '})();';
 
   document.getElementById('bmBtn').href = bmCode;
 
-  // sessionStorage에서 데이터 읽기
-  var raw = sessionStorage.getItem('cartItems');
-  if (raw) {
+  // URL 해시에서 데이터 읽기
+  var hash = location.hash.slice(1);
+  if (hash) {
     try {
-      items = JSON.parse(raw);
-      sessionStorage.removeItem('cartItems');
+      items = JSON.parse(decodeURIComponent(hash));
+      history.replaceState(null, '', location.pathname);
       if (items.length) {
         document.getElementById('installPanel').style.display = 'none';
         document.getElementById('tableWrap').style.display = 'block';
