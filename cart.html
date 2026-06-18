@@ -119,6 +119,13 @@ window.addEventListener('load', function() {
       'var spec=sr.replace(/,?\\s*\\d+개$/,"").trim();' +
       'items.push({name:name,spec:spec,unit:"개",qty:1,price:price,selected:true,site:"쿠팡"});' +
     '});' +
+    // 총 배송비 추출
+    'var shipEl=Array.from(document.querySelectorAll("*")).find(function(el){return el.children.length<3&&el.innerText&&el.innerText.trim().startsWith("\uCD1D \uBC30\uc1A1\ube44")&&el.innerText.includes("\uC6D0")&&el.innerText.length<30;});' +
+    'if(shipEl){' +
+      'var shipMatch=shipEl.innerText.match(/([\\d,]+)\\s*\uC6D0/);' +
+      'var shipPrice=shipMatch?parseInt(shipMatch[1].replace(/,/g,"")):0;' +
+      'if(shipPrice>0)items.push({name:"\uBC30\uC1A1\uBE44",spec:"",unit:"\uC2DD",qty:1,price:shipPrice,selected:true,site:"\uCFE0\uD321"});' +
+    '}' +
     'if(!items.length){alert("\uCCB4\uD06C\uB41C \uC0C1\uD488\uC744 \uCC3E\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.\\n\uC0C1\uD488\uC744 \uCCB4\uD06C\uD588\uB294\uC9C0 \uD655\uC778\uD574\uC8FC\uC138\uC694.");return;}' +
     'var enc=encodeURIComponent(JSON.stringify(items));' +
     'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
