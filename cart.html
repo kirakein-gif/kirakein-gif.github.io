@@ -44,7 +44,7 @@ td:nth-child(2),td:nth-child(3){text-align:left;}
 <body>
 
 <div class="topbar">
-  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.9</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
+  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.10</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
   <div class="summary-wrap">
     <div class="summary-card"><span>품목 수</span><strong id="sumCount">0건</strong></div>
     <div class="summary-card"><span>합계금액</span><strong id="sumTotal">0원</strong></div>
@@ -236,12 +236,21 @@ window.addEventListener('load', function() {
       'var qty=qm?parseInt(qm[1]):1;' +
       'items.push({name:name,spec:"",unit:"\uac1c",qty:qty,price:price,selected:true,site:"\uc774\ub9c8\ud2b8\ubab0"});' +
     '});' +
+    // 배송비: dl 태그에서 "+숫자원" 패턴 - split 방식으로 추출
     'var shipDl=Array.from(document.querySelectorAll("dl")).find(function(el){' +
       'return el.innerText.startsWith("\ubc30\uc1a1\ube44")&&el.innerText.includes("+");' +
     '});' +
-    'var ship=shipDl?shipDl.innerText.match(/\+([\d,]+)\uc6d0/):null;' +
-    'var shipPrice=ship?parseInt(ship[1].replace(/,/g,"")):0;' +
-    'if(shipPrice>0)items.push({name:"\ubc30\uc1a1\ube44",spec:"",unit:"\uc2dd",qty:1,price:shipPrice,selected:true,site:"\uc774\ub9c8\ud2b8\ubab0"});' +
+    'if(shipDl){' +
+      'var dlTxt=shipDl.innerText;' +
+      'var plusIdx=dlTxt.indexOf("+");' +
+      'if(plusIdx>-1){' +
+        'var afterPlus=dlTxt.substring(plusIdx+1);' +
+        'var wonIdx=afterPlus.indexOf("\uc6d0");' +
+        'var shipStr=wonIdx>-1?afterPlus.substring(0,wonIdx).replace(/,/g,""):"0";' +
+        'var shipPrice=parseInt(shipStr)||0;' +
+        'if(shipPrice>0)items.push({name:"\ubc30\uc1a1\ube44",spec:"",unit:"\uc2dd",qty:1,price:shipPrice,selected:true,site:"\uc774\ub9c8\ud2b8\ubab0"});' +
+      '}' +
+    '}' +
     'if(!items.length){alert("\uccb4\ud06c\ub41c \uc0c1\ud488\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.");return;}' +
     'var enc=encodeURIComponent(JSON.stringify(items));' +
     'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
