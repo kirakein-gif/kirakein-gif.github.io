@@ -44,7 +44,7 @@ td:nth-child(2),td:nth-child(3){text-align:left;}
 <body>
 
 <div class="topbar">
-  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.18</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
+  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.19</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
   <div class="summary-wrap">
     <div class="summary-card"><span>품목 수</span><strong id="sumCount">0건</strong></div>
     <div class="summary-card"><span>합계금액</span><strong id="sumTotal">0원</strong></div>
@@ -356,7 +356,7 @@ function numToKorean(n) {
     var chunk=n%10000;
     if(chunk>0){
       var chunkStr='';var c=chunk;var pIdx=0;
-      while(c>0){var d=c%10;if(d>0)chunkStr=(d===1&&pIdx>0?'':units[d])+pos[pIdx]+chunkStr;c=Math.floor(c/10);pIdx++;}
+      while(c>0){var d=c%10;if(d>0)chunkStr=units[d]+pos[pIdx]+chunkStr;c=Math.floor(c/10);pIdx++;}
       result=chunkStr+big[bigIdx]+result;
     }
     n=Math.floor(n/10000);bigIdx++;
@@ -371,11 +371,10 @@ function updateSummaryPanel() {
   var firstName = sel[0].name;
   var total = items.filter(function(i){return i.selected;}).reduce(function(acc,i){return acc+(i.qty*i.price);},0);
   var count = sel.length;
-  var purpose = document.getElementById('purposeInput').value || '○○○○를 위한';
   var korAmount = '금'+numToKorean(total)+'원';
   var numAmount = '금'+total.toLocaleString()+'원';
-  var text = purpose+' 물품구입('+firstName+' 외 '+(count-1)+'종)\n\n'+
-    purpose+' 물품을 구입하고자 합니다.\n'+
+  var text = '○○○○를 위한 물품구입('+firstName+' 외 '+(count-1)+'종)\n\n'+
+    '○○○○를 위한 물품을 구입하고자 합니다.\n'+
     ' 1. 품목: '+firstName+' 외 '+(count-1)+'종\n'+
     ' 2. 금액: '+numAmount+'('+korAmount+')';
   document.getElementById('summaryText').innerText = text;
@@ -385,8 +384,10 @@ function updateSummaryPanel() {
 function copySummary() {
   var text = document.getElementById('summaryText').innerText;
   navigator.clipboard.writeText(text).then(function(){
-    showToast('품의개요가 클립보드에 복사되었습니다.');
-  }).catch(function(){ prompt('아래 내용을 복사하세요.', text); });
+    showToast('✅ 품의개요가 복사되었습니다. 품의서에 붙여넣기(Ctrl+V) 하세요.');
+  }).catch(function(){
+    showToast('⚠️ 복사에 실패했습니다. 텍스트를 직접 선택하여 복사해 주세요.');
+  });
 }
 
 var _origRender = render;
@@ -394,25 +395,20 @@ render = function(){ _origRender(); updateSummaryPanel(); };
 </script>
 
 <style>
-.summary-panel{background:#fff;border-top:2px solid #e2e8f0;padding:20px 24px;}
+.summary-panel{background:#fff;border-top:2px solid #e2e8f0;padding:14px 24px;}
 .summary-panel-inner{max-width:900px;}
 .summary-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
 .summary-header span{font-size:.95rem;font-weight:700;color:#1e293b;}
-.purpose-input{border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:.83rem;width:200px;font-family:inherit;}
-.purpose-input:focus{border-color:#3b82f6;outline:none;}
 .btn-copy{padding:7px 16px;background:#3b82f6;color:#fff;border:none;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer;}
 .btn-copy:hover{background:#2563eb;}
-.summary-text{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px 18px;font-size:.88rem;line-height:2;white-space:pre-wrap;color:#1e293b;font-family:'Pretendard',sans-serif;}
+.summary-text{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;font-size:.85rem;line-height:1.8;white-space:pre-wrap;color:#1e293b;font-family:'Pretendard',sans-serif;}
 </style>
 
 <div class="summary-panel" id="summaryPanel" style="display:none;">
   <div class="summary-panel-inner">
     <div class="summary-header">
-      <span>📋 품의개요</span>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input id="purposeInput" class="purpose-input" placeholder="○○○○를 위한" value="○○○○를 위한" oninput="updateSummaryPanel()">
-        <button class="btn-copy" onclick="copySummary()">📋 클립보드 복사</button>
-      </div>
+      <span>📋 품의개요 <small style="color:#94a3b8;font-weight:400;">○○○○ 부분을 수정 후 복사하세요</small></span>
+      <button class="btn-copy" onclick="copySummary()">📋 품의서에 붙여넣기</button>
     </div>
     <div class="summary-text" id="summaryText"></div>
   </div>
