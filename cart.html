@@ -44,7 +44,7 @@ td:nth-child(2),td:nth-child(3){text-align:left;}
 <body>
 
 <div class="topbar">
-  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.27</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
+  <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.29</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
   <div class="summary-wrap">
     <div class="summary-card"><span>품목 수</span><strong id="sumCount">0건</strong></div>
     <div class="summary-card"><span>합계금액</span><strong id="sumTotal">0원</strong></div>
@@ -72,6 +72,7 @@ td:nth-child(2),td:nth-child(3){text-align:left;}
     <a class="bm-btn" id="bmGmarket" href="#" style="background:#00a850;">🛒 G마켓 장바구니 추출</a>
     <a class="bm-btn" id="bm11st" href="#" style="background:#cc0000;">🛒 11번가 장바구니 추출</a>
     <a class="bm-btn" id="bmEmart" href="#" style="background:#f4a200;color:#000;">🛒 이마트몰 장바구니 추출</a>
+    <a class="bm-btn" id="bmS2B" href="#" style="background:#0066cc;">🛒 S2B 장바구니 추출</a>
   </div>
     <div class="bm-hint">← <b>북마크바로 드래그</b>하여 설치<br>해당 쇼핑몰 장바구니 페이지에서만 작동합니다</div>
   </div>
@@ -290,6 +291,41 @@ window.addEventListener('load', function() {
     'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
   '})();';
   document.getElementById('bmEmart').href = bmEmart;
+
+  // S2B 북마클릿
+  var bmS2B = 'javascript:(function(){' +
+    'var items=[];var hasCondShip=false;' +
+    'document.querySelectorAll("input[type=checkbox]:checked").forEach(function(cb){' +
+      'var c2=cb.parentElement.parentElement;' +
+      'var t=c2.innerText;' +
+      'var lines=t.split("\n").map(function(s){return s.trim();}).filter(function(s){return s.length>0;});' +
+      'var name="";var spec="";' +
+      'for(var i=0;i<lines.length;i++){' +
+        'var l=lines[i];' +
+        'if(l.length>5&&!l.includes("S2B")&&!l.match(/^\d{4}-/)&&!l.match(/^[\d,]+$/)&&' +
+        '!l.includes("\ubc14\uc774")&&!l.includes("(\uc8fc)")&&!l.includes("\ubaa8\ub178\ud2b8")&&!l.includes("\uc9c0\uc624")){' +
+          'if(!name)name=l;' +
+          'else if(!spec){spec=l;break;}' +
+        '}' +
+      '}' +
+      'if(!name)return;' +
+      // 탭 분리로 단가/총액 추출
+      'var tabs=t.split("\t").map(function(s){return s.trim();}).filter(function(s){return s.match(/^[\d,]+$/);});' +
+      'var unitPrice=tabs.length>0?parseInt(tabs[0].replace(/,/g,"")):0;' +
+      'var totalPrice=tabs.length>1?parseInt(tabs[1].replace(/,/g,"")):unitPrice;' +
+      'if(!unitPrice)return;' +
+      'var qty=totalPrice&&unitPrice?Math.round(totalPrice/unitPrice):1;' +
+      // 조건부무료 이미지 확인
+      'var imgs=c2.querySelectorAll("img");' +
+      'for(var j=0;j<imgs.length;j++){if(imgs[j].src.includes("btn_pay_03"))hasCondShip=true;}' +
+      'items.push({name:name,spec:spec,unit:"\uac1c",qty:qty,price:unitPrice,selected:true,site:"S2B"});' +
+    '});' +
+    'if(hasCondShip)items.push({name:"\ubc30\uc1a1\ube44(\uc9c1\uc811\uc785\ub825)",spec:"",unit:"\uc2dd",qty:1,price:0,selected:true,site:"S2B"});' +
+    'if(!items.length){alert("\uccb4\ud06c\ub41c \uc0c1\ud488\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.");return;}' +
+    'var enc=encodeURIComponent(JSON.stringify(items));' +
+    'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
+  '})();';
+  document.getElementById('bmS2B').href = bmS2B;
 
   // URL 해시에서 데이터 읽기
   var hash = location.hash.slice(1);
