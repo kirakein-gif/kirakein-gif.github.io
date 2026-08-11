@@ -45,7 +45,7 @@ td:nth-child(2),td:nth-child(3){text-align:left;}
 
 <div class="topbar">
   <div style="display:flex;flex-direction:column;gap:2px;">
-        <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.33</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
+        <h1>🛒 장바구니 품의목록 <span style="font-size:.75rem;color:#94a3b8;font-weight:400;">v2.34</span> <span class="site-badge" id="siteBadge">쿠팡</span></h1>
         <span style="font-size:.72rem;color:#94a3b8;">만든이: 천안버들유치원 나대현</span>
       </div>
   <div class="summary-wrap">
@@ -299,11 +299,9 @@ window.addEventListener('load', function() {
   var bmS2B = 'javascript:(function(){' +
     'var NL=String.fromCharCode(10);' +
     'var TAB=String.fromCharCode(9);' +
-    'var items=[];var hasCondShip=false;' +
-    'var SKIP=["S2B","\ubc14\uc774","(\uc8fc)","\ubaa8\ub178\ud2b8","\uc9c0\uc624","\uc5d0\ub4c0","\ube44\uc988"];' +
+    'var items=[];' +
+    'var SKIP=["S2B","\ubc14\uc774","(\uc8fc)","\ubaa8\ub178\ud2b8","\uc9c0\uc624","\uc5d0\ub4c0","\ube44\uc988","\uc548\ub098","\ubcc4\ud558\ub791","\uc9c0\uc601"];' +
     'function isSkip(s){for(var k=0;k<SKIP.length;k++){if(s.includes(SKIP[k]))return true;}return false;}' +
-    'function isNum(s){return s.length>0&&s.split(",").join("").split(".").join("").length===s.replace(/[0-9]/g,"").replace(/[,]/g,"").length===0;}' +
-    'function onlyNums(s){return s.replace(/[^0-9]/g,"").length===s.trim().length&&s.trim().length>0;}' +
     'document.querySelectorAll("input[type=checkbox]:checked").forEach(function(cb){' +
       'var c2=cb.parentElement.parentElement;' +
       'var t=c2.innerText;' +
@@ -311,32 +309,41 @@ window.addEventListener('load', function() {
       'var name="";var spec="";' +
       'for(var i=0;i<lines.length;i++){' +
         'var l=lines[i].split(TAB)[0].trim();' +
-        'if(l.length<5)continue;' +
+        'if(l.length<2)continue;' +
         'if(isSkip(l))continue;' +
-        // 날짜 패턴 (2026-09-10 형태) 제외
         'if(l.charAt(4)==="-"&&l.charAt(7)==="-")continue;' +
-        // 숫자,숫자 패턴 제외
         'if(l.replace(/[0-9,]/g,"").length===0)continue;' +
         'if(!name){name=l;}' +
         'else if(!spec){spec=l;break;}' +
       '}' +
       'if(!name)return;' +
-      // 탭으로 분리해서 숫자만 있는 것 추출
+      // 탭 분리해서 숫자만 추출
       'var tabs=t.split(TAB).map(function(s){return s.trim();});' +
       'var nums=[];' +
       'for(var j=0;j<tabs.length;j++){' +
         'var v=tabs[j].replace(/,/g,"");' +
         'if(v.length>=3&&v.replace(/[0-9]/g,"").length===0)nums.push(parseInt(v));' +
       '}' +
+      // nums[0]=단가, nums[1]=총액, nums[2]=배송비(있을경우)
       'var unitPrice=nums.length>0?nums[0]:0;' +
       'var totalPrice=nums.length>1?nums[1]:unitPrice;' +
+      'var shipPrice=nums.length>2?nums[2]:0;' +
       'if(!unitPrice)return;' +
       'var qty=totalPrice&&unitPrice?Math.round(totalPrice/unitPrice):1;' +
-      'var imgs=c2.querySelectorAll("img");' +
-      'for(var j=0;j<imgs.length;j++){if(imgs[j].src.includes("btn_pay_03"))hasCondShip=true;}' +
       'items.push({name:name,spec:spec,unit:"\uac1c",qty:qty,price:unitPrice,selected:true,site:"S2B"});' +
+      // 배송비: 숫자로 있으면 그 값, 조건부무료 이미지면 3000 기본
+      'if(shipPrice>0){' +
+        'items.push({name:"\ubc30\uc1a1\ube44",spec:"",unit:"\uc2dd",qty:1,price:shipPrice,selected:true,site:"S2B"});' +
+      '}else{' +
+        'var imgs=c2.querySelectorAll("img");' +
+        'for(var j=0;j<imgs.length;j++){' +
+          'if(imgs[j].src.includes("btn_pay_03")){' +
+            'items.push({name:"\ubc30\uc1a1\ube44(\uc9c1\uc811\uc785\ub825)",spec:"",unit:"\uc2dd",qty:1,price:3000,selected:true,site:"S2B"});' +
+            'break;' +
+          '}' +
+        '}' +
+      '}' +
     '});' +
-    'if(hasCondShip)items.push({name:"\ubc30\uc1a1\ube44(\uc9c1\uc811\uc785\ub825)",spec:"",unit:"\uc2dd",qty:1,price:3000,selected:true,site:"S2B"});' +
     'if(!items.length){alert("\uccb4\ud06c\ub41c \uc0c1\ud488\uc744 \ucc3e\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.");return;}' +
     'var enc=encodeURIComponent(JSON.stringify(items));' +
     'window.open("https://kirakein-gif.github.io/cart.html#"+enc,"_blank");' +
